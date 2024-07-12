@@ -1,6 +1,15 @@
 <?php
 session_start();
 require_once './inc/functions.php';
+
+if (isset($_GET['logout']) && $_GET['logout'] == true) {
+    logout_user();
+}
+
+$user = get_user();
+
+$username = isset($user['user'][0]) && !empty($user['user'][0]) ? $user['user'][0] : '';
+
 ?>
 
 <!DOCTYPE html>
@@ -38,9 +47,10 @@ require_once './inc/functions.php';
                 <?php
                 if (check_auth()) {
                     ?>
-                        <a href="./dashboard.php" class="text-sm font-semibold leading-6 text-gray-900 mr-4">Dashboard</a>
-                        <a href="./logout.php" class="text-sm font-semibold leading-6 text-gray-900">Log Out <span
-                                aria-hidden="true">&rarr;</span></a>
+                    <span href="" class="text-sm font-semibold leading-6 text-indigo-900 mr-8">Hello, <?php echo $username; ?></span>
+                    <a href="./dashboard.php" class="text-sm font-semibold leading-6 text-gray-900 mr-4">Dashboard</a>
+                    <a href="?logout=true" class="text-sm font-semibold leading-6 text-gray-900">Log Out <span
+                            aria-hidden="true">&rarr;</span></a>
                 <?php } else {
                     ?>
                     <a href="./login.php" class="text-sm font-semibold leading-6 text-gray-900">Log in <span

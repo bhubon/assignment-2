@@ -40,6 +40,12 @@ function check_auth() {
     return isset($_SESSION['user']) && !empty($_SESSION['user']) ? true : false;
 }
 
+function logout_user() {
+    session_destroy();
+    header('Location:index.php');
+}
+
+
 
 function unique_token($userId, $username) {
 
@@ -170,4 +176,52 @@ function get_feedback_url_details() {
 
         return $response;
     }
+}
+
+function store_feedback($user_url, $feedback) {
+
+    $response = [];
+
+    if (!empty($user_url) || !empty($feedback)) {
+
+        $feedback_data = "$user_url|$feedback\n";
+        if (file_put_contents('inc/feedback.txt', $feedback_data, FILE_APPEND)) {
+            $response = [
+                'status' => 'success',
+                'message' => 'Feedback successfully submitted',
+            ];
+        } else {
+            $response = [
+                'status' => 'failed',
+                'message' => 'Something went wrong. Try again!',
+            ];
+        }
+    } else {
+        $response = [
+            'status' => 'failed',
+            'message' => 'Something went wrong. Try again!',
+        ];
+    }
+
+    return $response;
+}
+
+function get_user_feedback($user_unique_id) {
+    $user_feedback = [];
+
+    $stored_feedback = file("inc/feedback.txt", FILE_IGNORE_NEW_LINES);
+    if (!empty($stored_feedback)) {
+        foreach ($stored_feedback as $item) {
+            list($unique_id, $feedback_detail) = explode("|", $item);
+
+            if ($unique_id == $user_unique_id) {
+                array_push($user_feedback, $item);
+            }
+
+
+        }
+    }
+
+    return $user_feedback;
+
 }
